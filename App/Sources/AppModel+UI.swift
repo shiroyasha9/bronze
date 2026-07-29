@@ -7,6 +7,12 @@ struct ScrollTarget: Equatable {
     let anchor: UnitPoint
 }
 
+enum ClearKind {
+    case unsectioned
+    case allNotes
+    case everything
+}
+
 extension AppModel {
     func select(_ id: UUID, extend: Bool) {
         editingId = nil
@@ -52,6 +58,54 @@ extension AppModel {
             }
         }
         if let noteId { scrollTo(noteId) }
+    }
+
+    func confirmClear(_ kind: ClearKind) {
+        let alert = NSAlert()
+        alert.alertStyle = .warning
+        alert.messageText = clearTitle(for: kind)
+        alert.informativeText = clearDetail(for: kind)
+        alert.addButton(withTitle: "Cancel")
+        let clearButton = alert.addButton(withTitle: "Clear")
+        clearButton.hasDestructiveAction = true
+        guard alert.runModal() == .alertSecondButtonReturn else { return }
+        mutate {
+            switch kind {
+            case .unsectioned: $0.clearUnsectioned()
+            case .allNotes: $0.clearAllNotes()
+            case .everything: $0.clearEverything()
+            }
+        }
+        let remaining = Set(store.notes.map(\.id))
+        selectedIds.removeAll { !remaining.contains($0) }
+        if let editingId, !remaining.contains(editingId) {
+            self.editingId = nil
+        }
+    }
+
+    var unsectionedCount: Int { store.notes(in: nil).count }
+
+    private func clearTitle(for kind: ClearKind) -> String {
+        switch kind {
+        case .unsectioned: "Clear Unsectioned Notes?"
+        case .allNotes: "Clear All Notes?"
+        case .everything: "Clear Everything?"
+        }
+    }
+
+    private func clearDetail(for kind: ClearKind) -> String {
+        switch kind {
+        case .unsectioned:
+            "This will delete \(count(unsectionedCount, "unsectioned note")). This cannot be undone."
+        case .allNotes:
+            "This will delete \(count(store.notes.count, "note")). Sections will be kept."
+        case .everything:
+            "This will delete \(count(store.notes.count, "note")) and \(count(store.sections.count, "section")). This cannot be undone."
+        }
+    }
+
+    private func count(_ n: Int, _ noun: String) -> String {
+        "\(n) \(noun)\(n == 1 ? "" : "s")"
     }
 
     func attributedText(for note: Note) -> AttributedString {

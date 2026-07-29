@@ -35,6 +35,19 @@ public final class NotesStore {
         notes.removeAll(where: \.done)
     }
 
+    public func clearUnsectioned() {
+        notes.removeAll { $0.sectionId == nil }
+    }
+
+    public func clearAllNotes() {
+        notes.removeAll()
+    }
+
+    public func clearEverything() {
+        notes.removeAll()
+        sections.removeAll()
+    }
+
     @discardableResult
     public func createSection(name: String) -> Section {
         let section = Section(name: name)

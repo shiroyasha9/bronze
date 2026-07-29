@@ -46,6 +46,39 @@ import Testing
         store.clearCompleted()
         #expect(store.notes.map(\.text) == ["open one"])
     }
+
+    @Test func clearUnsectionedRemovesOnlyUnsectionedNotes() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Keep")
+        let filed = store.addNote(text: "filed")
+        store.moveNotes(ids: [filed.id], to: s.id)
+        _ = store.addNote(text: "loose")
+        store.clearUnsectioned()
+        #expect(store.notes.map(\.text) == ["filed"])
+        #expect(store.sections.map(\.name) == ["Keep"])
+    }
+
+    @Test func clearAllNotesKeepsSections() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Keep")
+        let filed = store.addNote(text: "filed")
+        store.moveNotes(ids: [filed.id], to: s.id)
+        _ = store.addNote(text: "loose")
+        store.clearAllNotes()
+        #expect(store.notes.isEmpty)
+        #expect(store.sections.map(\.name) == ["Keep"])
+    }
+
+    @Test func clearEverythingRemovesNotesAndSections() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Gone")
+        let filed = store.addNote(text: "filed")
+        store.moveNotes(ids: [filed.id], to: s.id)
+        _ = store.addNote(text: "loose")
+        store.clearEverything()
+        #expect(store.notes.isEmpty)
+        #expect(store.sections.isEmpty)
+    }
 }
 
 @Suite struct SectionTests {

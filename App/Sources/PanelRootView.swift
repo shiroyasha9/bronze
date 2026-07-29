@@ -49,7 +49,17 @@ struct PanelRootView: View {
 
             Menu {
                 Button("Add Section…") { model.promptNewSection() }
-                Button("Clear Completed") { model.mutate { $0.clearCompleted() } }
+                Menu("Clear") {
+                    Button("Clear Completed") { model.mutate { $0.clearCompleted() } }
+                        .disabled(!model.store.notes.contains(where: \.done))
+                    Divider()
+                    Button("Clear Unsectioned Notes…") { model.confirmClear(.unsectioned) }
+                        .disabled(model.unsectionedCount == 0)
+                    Button("Clear All Notes…") { model.confirmClear(.allNotes) }
+                        .disabled(model.store.notes.isEmpty)
+                    Button("Clear Everything…") { model.confirmClear(.everything) }
+                        .disabled(model.store.notes.isEmpty && model.store.sections.isEmpty)
+                }
                 Divider()
                 Toggle("Drag to Reorder", isOn: $model.dragDropEnabled)
                 Toggle("Pin to Foreground", isOn: $model.pinToForeground)
