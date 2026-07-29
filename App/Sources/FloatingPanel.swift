@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// Vetoes isMovableByWindowBackground over a region so SwiftUI drag
@@ -25,6 +26,7 @@ final class FloatingPanel: NSPanel {
 final class PanelController {
     private let panel: FloatingPanel
     private var keyRouter: KeyRouter?
+    private var pinSubscription: AnyCancellable?
 
     init(model: AppModel) {
         panel = FloatingPanel(
@@ -36,7 +38,7 @@ final class PanelController {
         panel.titleVisibility = .hidden
         panel.titlebarAppearsTransparent = true
         panel.isMovableByWindowBackground = true
-        panel.level = .floating
+        panel.level = model.pinToForeground ? .floating : .normal
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
@@ -51,6 +53,10 @@ final class PanelController {
         panel.contentView = hosting
 
         keyRouter = KeyRouter(model: model, panel: panel)
+
+        pinSubscription = model.$pinToForeground.sink { [weak panel] pinned in
+            panel?.level = pinned ? .floating : .normal
+        }
 
         panel.setFrameAutosaveName("BronzePanel")
         if panel.frame.origin == .zero, let screen = NSScreen.main {

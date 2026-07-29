@@ -17,6 +17,9 @@ final class AppModel: ObservableObject {
     @Published var dragDropEnabled: Bool {
         didSet { UserDefaults.standard.set(dragDropEnabled, forKey: "dragDropEnabled") }
     }
+    @Published var pinToForeground: Bool {
+        didSet { UserDefaults.standard.set(pinToForeground, forKey: "pinToForeground") }
+    }
     @Published var dropIndicator: DropIndicator?
     var activeDragPayload: NoteDragPayload?
     private var dropIndicatorExpiry: Task<Void, Never>?
@@ -45,6 +48,7 @@ final class AppModel: ObservableObject {
         self.fileURL = fileURL
         self.store = (try? Persistence.load(from: fileURL)) ?? NotesStore()
         self.dragDropEnabled = UserDefaults.standard.object(forKey: "dragDropEnabled") as? Bool ?? true
+        self.pinToForeground = UserDefaults.standard.bool(forKey: "pinToForeground")
     }
 
     nonisolated static var defaultFileURL: URL {

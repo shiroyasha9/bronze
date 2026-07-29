@@ -45,6 +45,7 @@ struct PanelRootView: View {
                 Button("Clear Completed") { model.mutate { $0.clearCompleted() } }
                 Divider()
                 Toggle("Drag to Reorder", isOn: $model.dragDropEnabled)
+                Toggle("Pin to Foreground", isOn: $model.pinToForeground)
             } label: {
                 Image(systemName: "ellipsis")
             }
