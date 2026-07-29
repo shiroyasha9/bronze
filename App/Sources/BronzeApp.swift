@@ -6,7 +6,7 @@ struct BronzeApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra("Bronze", systemImage: "hexagon.fill") {
+        MenuBarExtra("Bronze", image: "MenuBarIcon") {
             Button("Show/Hide Panel") {
                 appDelegate.togglePanel()
             }

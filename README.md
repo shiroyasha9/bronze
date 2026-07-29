@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/brand/github-repository-icon.png" width="128" height="128" alt="Bronze icon">
+</p>
+
 # Bronze
 
 An open-source, Copper-inspired scratchpad for AI-assisted work. Native macOS, keyboard-first, local-only.
