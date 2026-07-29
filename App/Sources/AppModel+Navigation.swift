@@ -77,7 +77,7 @@ extension AppModel {
         scrollTo(anchorId, anchor: .center)
     }
 
-    private func scrollTo(_ id: UUID, anchor: UnitPoint = .center) {
+    func scrollTo(_ id: UUID, anchor: UnitPoint = .center) {
         scrollTarget = ScrollTarget(id: id, anchor: anchor)
     }
 

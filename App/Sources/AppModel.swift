@@ -2,6 +2,7 @@ import AppKit
 import BronzeCore
 import Combine
 import Foundation
+import SwiftUI
 
 @MainActor
 final class AppModel: ObservableObject {
@@ -63,7 +64,11 @@ final class AppModel: ObservableObject {
     func addNote(text: String) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
-        mutate { $0.addNote(text: trimmed) }
+        var added: Note?
+        mutate { added = $0.addNote(text: trimmed) }
+        if let added {
+            scrollTarget = ScrollTarget(id: added.id, anchor: .bottom)
+        }
     }
 
     func capture(text: String) {

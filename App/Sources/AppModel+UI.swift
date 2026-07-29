@@ -30,6 +30,7 @@ extension AppModel {
     func moveSelection(_ anchor: UUID, to sectionId: UUID?) {
         selectIfUnselected(anchor)
         mutate { $0.moveNotes(ids: Set(selectedIds), to: sectionId) }
+        scrollTo(anchor)
     }
 
     func promptNewSection(moving noteId: UUID? = nil) {
@@ -50,6 +51,7 @@ extension AppModel {
                 $0.moveNotes(ids: [noteId], to: section.id)
             }
         }
+        if let noteId { scrollTo(noteId) }
     }
 
     func attributedText(for note: Note) -> AttributedString {

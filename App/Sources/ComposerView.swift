@@ -14,7 +14,7 @@ struct ComposerView: View {
 
             TextField("Add a note or a prompt", text: $text, axis: .vertical)
                 .textFieldStyle(.plain)
-                .lineLimit(1...6)
+                .lineLimit(3...6)
                 .focused(focused)
                 .onSubmit(commit)
         }
