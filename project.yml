@@ -26,7 +26,11 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         SWIFT_VERSION: "5.10"
         ENABLE_HARDENED_RUNTIME: YES
-        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_IDENTITY: Bronze Signing
+        # Library validation rejects the previews debug dylib when signed
+        # without a Team ID (self-signed cert).
+        ENABLE_DEBUG_DYLIB: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     info:
       path: App/Info.plist

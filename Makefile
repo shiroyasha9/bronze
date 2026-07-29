@@ -2,7 +2,10 @@ APP := Bronze
 BUILD_DIR := $(CURDIR)/.build/xcode
 APP_PATH := $(BUILD_DIR)/Build/Products/Debug/$(APP).app
 
-.PHONY: gen build test run clean
+.PHONY: gen build test run clean sign-setup
+
+sign-setup:
+	bash scripts/setup-signing.sh
 
 gen:
 	xcodegen generate
