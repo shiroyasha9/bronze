@@ -8,11 +8,22 @@ enum ToastWindow {
     static func show(_ message: String) {
         current?.orderOut(nil)
 
-        let label = NSHostingView(rootView: ToastLabel(message: message))
-        label.frame.size = label.fittingSize
+        let content: NSView
+        if #available(macOS 26.0, *) {
+            let label = NSHostingView(rootView: ToastContent(message: message))
+            label.frame.size = label.fittingSize
+            let glass = NSGlassEffectView(frame: NSRect(origin: .zero, size: label.fittingSize))
+            glass.cornerRadius = label.fittingSize.height / 2
+            glass.contentView = label
+            content = glass
+        } else {
+            let label = NSHostingView(rootView: ToastLabel(message: message))
+            label.frame.size = label.fittingSize
+            content = label
+        }
 
         let window = NSWindow(
-            contentRect: NSRect(origin: .zero, size: label.fittingSize),
+            contentRect: NSRect(origin: .zero, size: content.frame.size),
             styleMask: .borderless,
             backing: .buffered,
             defer: false
@@ -20,8 +31,9 @@ enum ToastWindow {
         window.isOpaque = false
         window.backgroundColor = .clear
         window.level = .statusBar
+        window.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
         window.ignoresMouseEvents = true
-        window.contentView = label
+        window.contentView = content
 
         let mouse = NSEvent.mouseLocation
         window.setFrameOrigin(NSPoint(x: mouse.x + 16, y: mouse.y + 16))
@@ -38,15 +50,3 @@ enum ToastWindow {
     }
 }
 
-private struct ToastLabel: View {
-    let message: String
-
-    var body: some View {
-        Text(message)
-            .font(.system(size: 12, weight: .medium))
-            .foregroundStyle(.white)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Color.black.opacity(0.85), in: Capsule())
-    }
-}

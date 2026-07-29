@@ -21,8 +21,10 @@ final class AppModel: ObservableObject {
         didSet { UserDefaults.standard.set(pinToForeground, forKey: "pinToForeground") }
     }
     @Published var dropIndicator: DropIndicator?
+    @Published var toast: ToastMessage?
     var activeDragPayload: NoteDragPayload?
     private var dropIndicatorExpiry: Task<Void, Never>?
+    private var toastExpiry: Task<Void, Never>?
 
     /// dropExited is unreliable when a drag ends outside any target, so the
     /// indicator is cleared as soon as the mouse button releases.
@@ -82,11 +84,24 @@ final class AppModel: ObservableObject {
     func copySelection() {
         guard !selectedIds.isEmpty else { return }
         setPasteboard(store.copyText(ids: selectedIds))
+        showToast("Copied")
     }
 
     func copySelectionAsList() {
         guard !selectedIds.isEmpty else { return }
         setPasteboard(store.listText(ids: orderedSelection()))
+        showToast("Copied as List")
+    }
+
+    func showToast(_ text: String) {
+        let message = ToastMessage(text: text)
+        withAnimation(.easeOut(duration: 0.15)) { toast = message }
+        toastExpiry?.cancel()
+        toastExpiry = Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1.2))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeIn(duration: 0.2)) { self?.toast = nil }
+        }
     }
 
     func deleteSelection() {

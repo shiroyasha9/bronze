@@ -12,6 +12,13 @@ struct PanelRootView: View {
             header
             notesList
             ComposerView(focused: $composerFocused)
+                .overlay(alignment: .top) {
+                    if let toast = model.toast {
+                        ToastLabel(message: toast.text)
+                            .offset(y: -42)
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
+                }
         }
         .padding(12)
         .ignoresSafeArea(.container, edges: .top)
