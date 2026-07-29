@@ -1,0 +1,35 @@
+name: Bronze
+options:
+  bundleIdPrefix: tech.teensy
+  deploymentTarget:
+    macOS: "14.0"
+  createIntermediateGroups: true
+
+packages:
+  BronzeCore:
+    path: Core
+
+targets:
+  Bronze:
+    type: application
+    platform: macOS
+    sources:
+      - App/Sources
+    dependencies:
+      - package: BronzeCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: tech.teensy.bronze
+        MARKETING_VERSION: 0.1.0
+        CURRENT_PROJECT_VERSION: 1
+        SWIFT_VERSION: "5.10"
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_STYLE: Automatic
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleName: Bronze
+        CFBundleDisplayName: Bronze
+        LSUIElement: true
+        LSMinimumSystemVersion: "14.0"
+        NSHumanReadableCopyright: "MIT License"
