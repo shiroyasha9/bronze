@@ -13,6 +13,7 @@ struct PanelRootView: View {
             ComposerView(focused: $composerFocused)
         }
         .padding(12)
+        .ignoresSafeArea(.container, edges: .top)
         .frame(minWidth: 300, minHeight: 400)
         .background(VisualEffectBackground().ignoresSafeArea())
         .environment(\.searchFocus, $searchFocused)

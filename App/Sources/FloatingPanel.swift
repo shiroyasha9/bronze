@@ -30,6 +30,7 @@ final class PanelController {
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
         panel.backgroundColor = .clear
+        panel.standardWindowButton(.closeButton)?.isHidden = true
         panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
         panel.standardWindowButton(.zoomButton)?.isHidden = true
 
