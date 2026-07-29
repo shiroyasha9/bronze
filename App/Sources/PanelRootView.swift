@@ -15,7 +15,7 @@ struct PanelRootView: View {
         .padding(12)
         .ignoresSafeArea(.container, edges: .top)
         .frame(minWidth: 300, minHeight: 400)
-        .background(VisualEffectBackground().ignoresSafeArea())
+        .background(PanelBackground().ignoresSafeArea())
         .environment(\.searchFocus, $searchFocused)
         .onChange(of: model.searchRequest) { _, _ in searchFocused = true }
         .onChange(of: model.composerRequest) { _, _ in composerFocused = true }
@@ -67,6 +67,7 @@ struct PanelRootView: View {
                 }
                 .padding(.bottom, 4)
             }
+            .scrollIndicators(.never)
             .onChange(of: model.scrollTarget) { _, target in
                 guard let target else { return }
                 withAnimation(.easeOut(duration: 0.15)) {

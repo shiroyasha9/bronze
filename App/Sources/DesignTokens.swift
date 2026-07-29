@@ -11,10 +11,35 @@ enum Bronze {
     static let cardCorner: CGFloat = 12
 }
 
+struct PanelBackground: View {
+    var body: some View {
+        if #available(macOS 26.0, *) {
+            Color.clear
+                .glassEffect(
+                    .regular.tint(Color(nsColor: .windowBackgroundColor).opacity(0.55)),
+                    in: .rect(cornerRadius: Bronze.panelCorner)
+                )
+        } else {
+            VisualEffectBackground()
+                .overlay(
+                    RoundedRectangle(cornerRadius: Bronze.panelCorner)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [.white.opacity(0.28), .white.opacity(0.04)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            ),
+                            lineWidth: 1
+                        )
+                )
+        }
+    }
+}
+
 struct VisualEffectBackground: NSViewRepresentable {
     func makeNSView(context: Context) -> NSVisualEffectView {
         let view = NSVisualEffectView()
-        view.material = .sidebar
+        view.material = .popover
         view.blendingMode = .behindWindow
         view.state = .active
         return view
