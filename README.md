@@ -11,11 +11,12 @@ Select text in almost any app, double-press Shift, and it becomes a checklist no
 > [!NOTE]
 > Bronze is early software. It works today, but expect rough edges and breaking changes.
 
-<!-- Demo video: upload it through the GitHub UI, then paste the generated user-attachments URL here. -->
 
 <p align="center">
   <img src="assets/screenshots/bronze-markdown.png" width="542" alt="Bronze showing checklist notes with inline Markdown">
 </p>
+
+https://github.com/user-attachments/assets/6731b337-98c5-49b7-a1f3-261ffc11b4eb
 
 ## How it works
 
