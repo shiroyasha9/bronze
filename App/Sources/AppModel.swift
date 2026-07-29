@@ -17,6 +17,7 @@ final class AppModel: ObservableObject {
     private(set) var store: NotesStore
     private let fileURL: URL
     private var saveTask: Task<Void, Never>?
+    var pasteboardTracker: PasteboardTracker?
 
     init(fileURL: URL = AppModel.defaultFileURL) {
         self.fileURL = fileURL
@@ -87,6 +88,7 @@ final class AppModel: ObservableObject {
     private func setPasteboard(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
+        pasteboardTracker?.noteOwnWrite()
     }
 
     private func scheduleSave() {

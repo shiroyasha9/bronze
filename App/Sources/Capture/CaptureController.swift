@@ -4,7 +4,9 @@ import ApplicationServices
 @MainActor
 final class CaptureController {
     private let model: AppModel
-    private let reader: SelectionReader
+    private let tracker: PasteboardTracker
+    private let axReader = AXSelectionReader()
+    private let cmdCReader: PasteboardSelectionReader
     private var flagsMonitors: [Any] = []
     private var keyMonitor: Any?
     private var lastShiftPress: Date?
@@ -13,12 +15,10 @@ final class CaptureController {
 
     private static let doubleTapWindow: TimeInterval = 0.35
 
-    init(model: AppModel) {
+    init(model: AppModel, tracker: PasteboardTracker) {
         self.model = model
-        self.reader = ChainedSelectionReader(readers: [
-            AXSelectionReader(),
-            PasteboardSelectionReader(),
-        ])
+        self.tracker = tracker
+        self.cmdCReader = PasteboardSelectionReader(onOwnWrite: { tracker.noteOwnWrite() })
         requestAccessibilityIfNeeded()
         installMonitors()
     }
@@ -63,13 +63,33 @@ final class CaptureController {
     }
 
     private func triggerCapture() {
+        captureLog.info("Chord: double-shift detected, trusted=\(AXIsProcessTrusted(), privacy: .public)")
         guard !capturing, AXIsProcessTrusted() else { return }
         capturing = true
         Task { @MainActor in
             defer { capturing = false }
-            guard let text = await reader.readSelection() else { return }
-            model.capture(text: text)
-            ToastWindow.show("Captured")
+
+            if let text = await axReader.readSelection() {
+                captureLog.info("Capture: AX, \(text.count, privacy: .public) chars")
+                model.capture(text: text)
+                ToastWindow.show("Captured")
+                return
+            }
+            // Copy-on-select apps (terminal TUIs) already put the selection on
+            // the clipboard; a fresh external change is the only signal they give.
+            if let text = tracker.freshExternalText, !text.isEmpty {
+                captureLog.info("Capture: fresh clipboard, \(text.count, privacy: .public) chars")
+                model.capture(text: text)
+                ToastWindow.show("Captured from clipboard")
+                return
+            }
+            if let text = await cmdCReader.readSelection() {
+                captureLog.info("Capture: cmd-c fallback, \(text.count, privacy: .public) chars")
+                model.capture(text: text)
+                ToastWindow.show("Captured")
+                return
+            }
+            captureLog.info("Capture: no selection found")
         }
     }
 }

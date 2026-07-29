@@ -1,5 +1,8 @@
 import AppKit
 import ApplicationServices
+import os
+
+let captureLog = Logger(subsystem: "tech.teensy.bronze", category: "capture")
 
 protocol SelectionReader {
     func readSelection() async -> String?
@@ -7,22 +10,34 @@ protocol SelectionReader {
 
 struct AXSelectionReader: SelectionReader {
     func readSelection() async -> String? {
+        let front = NSWorkspace.shared.frontmostApplication
+        captureLog.info("AX: frontmost=\(front?.bundleIdentifier ?? "nil", privacy: .public)")
+
         let systemWide = AXUIElementCreateSystemWide()
         var focused: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(
+        let focusErr = AXUIElementCopyAttributeValue(
             systemWide, kAXFocusedUIElementAttribute as CFString, &focused
-        ) == .success, let element = focused else { return nil }
+        )
+        guard focusErr == .success, let element = focused else {
+            captureLog.info("AX: no focused element, err=\(focusErr.rawValue, privacy: .public)")
+            return nil
+        }
 
         var selected: CFTypeRef?
-        guard AXUIElementCopyAttributeValue(
+        let selErr = AXUIElementCopyAttributeValue(
             element as! AXUIElement, kAXSelectedTextAttribute as CFString, &selected
-        ) == .success, let text = selected as? String, !text.isEmpty else { return nil }
+        )
+        let text = selected as? String
+        captureLog.info("AX: selectedText err=\(selErr.rawValue, privacy: .public) len=\(text?.count ?? -1, privacy: .public)")
+        guard selErr == .success, let text, !text.isEmpty else { return nil }
         return text
     }
 }
 
 /// Simulates ⌘C, reads the pasteboard, then restores its previous contents.
 struct PasteboardSelectionReader: SelectionReader {
+    var onOwnWrite: @MainActor () -> Void = {}
+
     func readSelection() async -> String? {
         let pasteboard = NSPasteboard.general
         let saved = pasteboard.string(forType: .string)
@@ -31,14 +46,16 @@ struct PasteboardSelectionReader: SelectionReader {
         postCmdC()
         try? await Task.sleep(for: .milliseconds(150))
 
-        defer {
-            if let saved {
-                pasteboard.clearContents()
-                pasteboard.setString(saved, forType: .string)
-            }
-        }
-        guard pasteboard.changeCount != savedChangeCount else { return nil }
+        let changed = pasteboard.changeCount != savedChangeCount
         let text = pasteboard.string(forType: .string)
+        captureLog.info("Fallback: changed=\(changed, privacy: .public) len=\(text?.count ?? -1, privacy: .public)")
+        guard changed else { return nil }
+
+        if let saved {
+            pasteboard.clearContents()
+            pasteboard.setString(saved, forType: .string)
+            await onOwnWrite()
+        }
         return text?.isEmpty == false ? text : nil
     }
 
@@ -53,15 +70,3 @@ struct PasteboardSelectionReader: SelectionReader {
     }
 }
 
-struct ChainedSelectionReader: SelectionReader {
-    let readers: [SelectionReader]
-
-    func readSelection() async -> String? {
-        for reader in readers {
-            if let text = await reader.readSelection() {
-                return text
-            }
-        }
-        return nil
-    }
-}

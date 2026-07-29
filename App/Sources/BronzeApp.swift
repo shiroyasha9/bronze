@@ -54,7 +54,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let controller = PanelController(model: model)
         panelController = controller
         controller.show()
-        captureController = CaptureController(model: model)
+        let tracker = PasteboardTracker()
+        model.pasteboardTracker = tracker
+        captureController = CaptureController(model: model, tracker: tracker)
         panelHotkey = GlobalHotkey { [weak self] in
             Task { @MainActor in self?.togglePanel() }
         }
