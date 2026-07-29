@@ -1,3 +1,4 @@
+import Foundation
 import Testing
 @testable import BronzeCore
 
@@ -152,5 +153,111 @@ import Testing
         let only = store.addNote(text: "only")
         store.moveNoteUp(id: only.id)
         #expect(store.notes(in: nil).map(\.text) == ["only"])
+    }
+}
+
+@Suite struct DragReorderTests {
+    @Test func moveBeforeAnchorWithinGroup() {
+        let store = NotesStore()
+        let a = store.addNote(text: "a")
+        _ = store.addNote(text: "b")
+        let c = store.addNote(text: "c")
+        store.moveNotes(ids: [c.id], before: a.id)
+        #expect(store.displayOrder().map(\.text) == ["c", "a", "b"])
+    }
+
+    @Test func moveAfterAnchorWithinGroup() {
+        let store = NotesStore()
+        let a = store.addNote(text: "a")
+        _ = store.addNote(text: "b")
+        let c = store.addNote(text: "c")
+        store.moveNotes(ids: [a.id], after: c.id)
+        #expect(store.displayOrder().map(\.text) == ["b", "c", "a"])
+    }
+
+    @Test func moveAcrossSectionsAdoptsAnchorSection() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Research")
+        let inbox = store.addNote(text: "inbox")
+        let filed = store.addNote(text: "filed")
+        store.moveNotes(ids: [filed.id], to: s.id)
+        store.moveNotes(ids: [inbox.id], after: filed.id)
+        #expect(store.notes(in: nil).isEmpty)
+        #expect(store.notes(in: s.id).map(\.text) == ["filed", "inbox"])
+    }
+
+    @Test func moveBlockPreservesDisplayOrderRegardlessOfIdOrder() {
+        let store = NotesStore()
+        let a = store.addNote(text: "a")
+        let b = store.addNote(text: "b")
+        _ = store.addNote(text: "c")
+        let d = store.addNote(text: "d")
+        store.moveNotes(ids: [b.id, a.id], after: d.id)
+        #expect(store.displayOrder().map(\.text) == ["c", "d", "a", "b"])
+    }
+
+    @Test func moveWithAnchorInsideSelectionIsNoOp() {
+        let store = NotesStore()
+        let a = store.addNote(text: "a")
+        let b = store.addNote(text: "b")
+        _ = store.addNote(text: "c")
+        store.moveNotes(ids: [a.id, b.id], before: b.id)
+        #expect(store.displayOrder().map(\.text) == ["a", "b", "c"])
+    }
+
+    @Test func moveWithUnknownAnchorIsNoOp() {
+        let store = NotesStore()
+        let a = store.addNote(text: "a")
+        _ = store.addNote(text: "b")
+        store.moveNotes(ids: [a.id], after: UUID())
+        #expect(store.displayOrder().map(\.text) == ["a", "b"])
+    }
+
+    @Test func moveToStartOfSection() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Research")
+        let inbox = store.addNote(text: "inbox")
+        let first = store.addNote(text: "first")
+        store.moveNotes(ids: [first.id], to: s.id)
+        store.moveNotes(ids: [inbox.id], toStartOfSection: s.id)
+        #expect(store.notes(in: s.id).map(\.text) == ["inbox", "first"])
+        #expect(store.notes(in: nil).isEmpty)
+    }
+
+    @Test func moveToStartOfUnsectionedGroup() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Research")
+        _ = store.addNote(text: "inbox")
+        let filed = store.addNote(text: "filed")
+        store.moveNotes(ids: [filed.id], to: s.id)
+        store.moveNotes(ids: [filed.id], toStartOfSection: nil)
+        #expect(store.notes(in: nil).map(\.text) == ["filed", "inbox"])
+        #expect(store.notes(in: s.id).isEmpty)
+    }
+
+    @Test func moveToStartOfEmptySection() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Empty")
+        let a = store.addNote(text: "a")
+        store.moveNotes(ids: [a.id], toStartOfSection: s.id)
+        #expect(store.notes(in: s.id).map(\.text) == ["a"])
+    }
+
+    @Test func insertTextAtStartOfSection() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Research")
+        let first = store.addNote(text: "first")
+        store.moveNotes(ids: [first.id], to: s.id)
+        let dropped = store.insertNote(text: "dropped", atStartOfSection: s.id)
+        #expect(store.notes(in: s.id).map(\.text) == ["dropped", "first"])
+        #expect(dropped.sectionId == s.id)
+    }
+
+    @Test func insertTextAtStartOfUnsectionedGroup() {
+        let store = NotesStore()
+        _ = store.addNote(text: "existing")
+        let dropped = store.insertNote(text: "dropped", atStartOfSection: nil)
+        #expect(store.notes(in: nil).map(\.text) == ["dropped", "existing"])
+        #expect(dropped.sectionId == nil)
     }
 }

@@ -13,6 +13,27 @@ final class AppModel: ObservableObject {
     @Published var visualMode = false
     @Published var searchRequest = 0
     @Published var composerRequest = 0
+    @Published var dragDropEnabled: Bool {
+        didSet { UserDefaults.standard.set(dragDropEnabled, forKey: "dragDropEnabled") }
+    }
+    @Published var dropIndicator: DropIndicator?
+    var activeDragPayload: NoteDragPayload?
+    private var dropIndicatorExpiry: Task<Void, Never>?
+
+    /// dropExited is unreliable when a drag ends outside any target, so the
+    /// indicator is cleared as soon as the mouse button releases.
+    func showDropIndicator(_ indicator: DropIndicator) {
+        guard NSEvent.pressedMouseButtons != 0 else { return }
+        dropIndicator = indicator
+        guard dropIndicatorExpiry == nil else { return }
+        dropIndicatorExpiry = Task { [weak self] in
+            while NSEvent.pressedMouseButtons != 0, !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(60))
+            }
+            self?.dropIndicator = nil
+            self?.dropIndicatorExpiry = nil
+        }
+    }
 
     private(set) var store: NotesStore
     private let fileURL: URL
@@ -22,6 +43,7 @@ final class AppModel: ObservableObject {
     init(fileURL: URL = AppModel.defaultFileURL) {
         self.fileURL = fileURL
         self.store = (try? Persistence.load(from: fileURL)) ?? NotesStore()
+        self.dragDropEnabled = UserDefaults.standard.object(forKey: "dragDropEnabled") as? Bool ?? true
     }
 
     nonisolated static var defaultFileURL: URL {
@@ -71,7 +93,7 @@ final class AppModel: ObservableObject {
     }
 
     /// Selection ordered by on-screen position, so Copy as List follows display order.
-    private func orderedSelection() -> [UUID] {
+    func orderedSelection() -> [UUID] {
         let selected = Set(selectedIds)
         return visibleNotes.map(\.id).filter(selected.contains)
     }

@@ -26,5 +26,18 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>MIT License</string>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Bronze Notes</string>
+			<key>UTTypeIdentifier</key>
+			<string>tech.teensy.bronze.notes</string>
+		</dict>
+	</array>
 </dict>
 </plist>

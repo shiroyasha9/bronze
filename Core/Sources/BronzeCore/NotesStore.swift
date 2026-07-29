@@ -96,6 +96,46 @@ public final class NotesStore {
         }
     }
 
+    public func moveNotes(ids: [UUID], before anchorId: UUID) {
+        moveNotes(ids: ids, anchorId: anchorId, offset: 0)
+    }
+
+    public func moveNotes(ids: [UUID], after anchorId: UUID) {
+        moveNotes(ids: ids, anchorId: anchorId, offset: 1)
+    }
+
+    public func moveNotes(ids: [UUID], toStartOfSection sectionId: UUID?) {
+        let idSet = Set(ids)
+        var moved = displayOrder().filter { idSet.contains($0.id) }
+        guard !moved.isEmpty else { return }
+        notes.removeAll { idSet.contains($0.id) }
+        for i in moved.indices { moved[i].sectionId = sectionId }
+        notes.insert(contentsOf: moved, at: startIndex(of: sectionId))
+    }
+
+    @discardableResult
+    public func insertNote(text: String, atStartOfSection sectionId: UUID?) -> Note {
+        let note = Note(text: text, sectionId: sectionId)
+        notes.insert(note, at: startIndex(of: sectionId))
+        return note
+    }
+
+    private func moveNotes(ids: [UUID], anchorId: UUID, offset: Int) {
+        let idSet = Set(ids)
+        guard !idSet.contains(anchorId) else { return }
+        var moved = displayOrder().filter { idSet.contains($0.id) }
+        guard !moved.isEmpty else { return }
+        guard notes.contains(where: { $0.id == anchorId }) else { return }
+        notes.removeAll { idSet.contains($0.id) }
+        guard let i = notes.firstIndex(where: { $0.id == anchorId }) else { return }
+        for j in moved.indices { moved[j].sectionId = notes[i].sectionId }
+        notes.insert(contentsOf: moved, at: i + offset)
+    }
+
+    private func startIndex(of sectionId: UUID?) -> Int {
+        notes.firstIndex { $0.sectionId == sectionId } ?? notes.count
+    }
+
     @discardableResult
     public func insertNote(text: String, after anchorId: UUID) -> Note? {
         insertNote(text: text, anchorId: anchorId, offset: 1)

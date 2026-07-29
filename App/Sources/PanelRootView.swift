@@ -5,6 +5,7 @@ struct PanelRootView: View {
     @EnvironmentObject private var model: AppModel
     @FocusState private var searchFocused: Bool
     @FocusState private var composerFocused: Bool
+    @State private var isEndDropTargeted = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -42,6 +43,8 @@ struct PanelRootView: View {
             Menu {
                 Button("Add Section…") { model.promptNewSection() }
                 Button("Clear Completed") { model.mutate { $0.clearCompleted() } }
+                Divider()
+                Toggle("Drag to Reorder", isOn: $model.dragDropEnabled)
             } label: {
                 Image(systemName: "ellipsis")
             }
@@ -64,10 +67,14 @@ struct PanelRootView: View {
                                 .id(note.id)
                         }
                     }
+                    endDropZone
                 }
                 .padding(.bottom, 4)
             }
             .scrollIndicators(.never)
+            .background {
+                if model.dragDropEnabled { ImmovableRegion() }
+            }
             .onChange(of: model.scrollTarget) { _, target in
                 guard let target else { return }
                 withAnimation(.easeOut(duration: 0.15)) {
@@ -76,6 +83,21 @@ struct PanelRootView: View {
                 model.scrollTarget = nil
             }
         }
+    }
+
+    private var endDropZone: some View {
+        Color.clear
+            .frame(height: 48)
+            .contentShape(Rectangle())
+            .overlay(alignment: .top) {
+                if isEndDropTargeted { DropIndicatorLine().offset(y: -4) }
+            }
+            .onDrop(
+                of: [.bronzeNotes, .text],
+                delegate: ZoneDropDelegate(model: model, targeted: $isEndDropTargeted) { model, info in
+                    model.performEndDrop(info: info)
+                }
+            )
     }
 }
 

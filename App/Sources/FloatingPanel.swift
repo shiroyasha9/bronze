@@ -1,6 +1,17 @@
 import AppKit
 import SwiftUI
 
+/// Vetoes isMovableByWindowBackground over a region so SwiftUI drag
+/// gestures there win against the AppKit window-move.
+struct ImmovableRegion: NSViewRepresentable {
+    final class ImmovableView: NSView {
+        override var mouseDownCanMoveWindow: Bool { false }
+    }
+
+    func makeNSView(context: Context) -> NSView { ImmovableView() }
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
 final class FloatingPanel: NSPanel {
     override var canBecomeKey: Bool { true }
     override var canBecomeMain: Bool { false }

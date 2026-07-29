@@ -36,3 +36,8 @@ targets:
         LSUIElement: true
         LSMinimumSystemVersion: "14.0"
         NSHumanReadableCopyright: "MIT License"
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: tech.teensy.bronze.notes
+            UTTypeDescription: Bronze Notes
+            UTTypeConformsTo:
+              - public.data
