@@ -53,6 +53,7 @@ final class PanelController {
         panel.contentView = hosting
 
         keyRouter = KeyRouter(model: model, panel: panel)
+        model.panelWindow = panel
 
         pinSubscription = model.$pinToForeground.sink { [weak panel] pinned in
             panel?.level = pinned ? .floating : .normal

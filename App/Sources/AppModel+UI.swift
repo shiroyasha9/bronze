@@ -48,7 +48,7 @@ extension AppModel {
         field.placeholderString = "Section name"
         alert.accessoryView = field
         alert.window.initialFirstResponder = field
-        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        guard runModalOnPanelScreen(alert) == .alertFirstButtonReturn else { return }
         let name = field.stringValue.trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return }
         mutate {
@@ -60,6 +60,20 @@ extension AppModel {
         if let noteId { scrollTo(noteId) }
     }
 
+    /// runModal centers alerts on the system main screen, which may not be
+    /// where the panel lives; re-anchor to the panel's screen first.
+    private func runModalOnPanelScreen(_ alert: NSAlert) -> NSApplication.ModalResponse {
+        alert.layout()
+        if let visible = panelWindow?.screen?.visibleFrame {
+            let size = alert.window.frame.size
+            alert.window.setFrameOrigin(NSPoint(
+                x: visible.midX - size.width / 2,
+                y: visible.minY + (visible.height - size.height) * 2 / 3
+            ))
+        }
+        return alert.runModal()
+    }
+
     func confirmClear(_ kind: ClearKind) {
         let alert = NSAlert()
         alert.alertStyle = .warning
@@ -68,7 +82,7 @@ extension AppModel {
         alert.addButton(withTitle: "Cancel")
         let clearButton = alert.addButton(withTitle: "Clear")
         clearButton.hasDestructiveAction = true
-        guard alert.runModal() == .alertSecondButtonReturn else { return }
+        guard runModalOnPanelScreen(alert) == .alertSecondButtonReturn else { return }
         mutate {
             switch kind {
             case .unsectioned: $0.clearUnsectioned()

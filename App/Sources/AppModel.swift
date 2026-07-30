@@ -45,6 +45,7 @@ final class AppModel: ObservableObject {
     private let fileURL: URL
     private var saveTask: Task<Void, Never>?
     var pasteboardTracker: PasteboardTracker?
+    weak var panelWindow: NSWindow?
 
     init(fileURL: URL = AppModel.defaultFileURL) {
         self.fileURL = fileURL
