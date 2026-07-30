@@ -37,7 +37,22 @@ release: gen
 		OTHER_CODE_SIGN_FLAGS="--timestamp" \
 		build
 
-notarize: release
+# xcodebuild re-signs only the framework's outer bundle; Sparkle's nested
+# executables keep upstream signatures, which notarization rejects.
+SPARKLE_FW := $(RELEASE_APP)/Contents/Frameworks/Sparkle.framework
+sign-sparkle:
+	for item in \
+		"$(SPARKLE_FW)/Versions/B/XPCServices/Downloader.xpc" \
+		"$(SPARKLE_FW)/Versions/B/XPCServices/Installer.xpc" \
+		"$(SPARKLE_FW)/Versions/B/Autoupdate" \
+		"$(SPARKLE_FW)/Versions/B/Updater.app" \
+		"$(SPARKLE_FW)" \
+		"$(RELEASE_APP)"; do \
+		codesign --force --sign "$(SIGN_IDENTITY)" --options runtime --timestamp "$$item" || exit 1; \
+	done
+	codesign --verify --deep --strict "$(RELEASE_APP)"
+
+notarize: release sign-sparkle
 	mkdir -p $(DIST_DIR)
 	ditto -c -k --keepParent "$(RELEASE_APP)" "$(DIST_DIR)/$(APP).zip"
 	xcrun notarytool submit "$(DIST_DIR)/$(APP).zip" --keychain-profile $(NOTARY_PROFILE) --wait
