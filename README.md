@@ -60,7 +60,7 @@ Bronze is an independent project. It is not affiliated with or endorsed by Coppe
 - Copy notes as plain text or a numbered list
 - Reorder notes within a section or drag them between sections
 - Drag plain text into or out of Bronze
-- Use standard shortcuts or the built-in Vim bindings
+- Use standard shortcuts or the built-in Vim bindings, with an in-app shortcut guide (`⌘/`)
 - Pin the panel above other windows and restore its last position
 - Clear completed notes and launch Bronze at login
 - Keep notes in a local JSON file, with no account, sync, or telemetry
@@ -110,6 +110,8 @@ Vim bindings activate automatically when the Bronze window is focused and no tex
 | `⇧⌘C` | Copy the selection as a numbered list |
 | `⌘F` | Focus search |
 | `⌘N` | Focus the composer |
+| `⇧⌘N` | Add a section |
+| `⌘/` | Show or hide the keyboard shortcut guide |
 | `⌥J` / `⌥K` | Move the selected note down or up |
 | `Escape` | Unfocus the composer, exit visual mode, clear search, clear selection, or hide Bronze |
 
@@ -131,6 +133,7 @@ Vim bindings activate automatically when the Bronze window is focused and no tex
 | `v` / `V` | Toggle visual selection mode |
 | `/` | Focus search |
 | `m` | Open the Move to menu |
+| `?` | Open the keyboard shortcut guide |
 
 Enter `gg`, `dd`, and `zz` within 400 milliseconds.
 

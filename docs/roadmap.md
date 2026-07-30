@@ -8,7 +8,8 @@ Features discussed during planning and deliberately cut from MVP. Ordered roughl
 - **Sparkle auto-updates** — signed appcast attached to each GitHub Release; `make appcast` + the `release` skill own the flow.
 - **Developer ID signing, notarization, dmg** — `make dmg`, manual for now (CI later).
 - **Paid prebuilt binary** — pay-what-you-want on Gumroad, same build free on GitHub Releases.
-- Escape unfocuses the composer instead of hiding the panel; the panel hotkey brings a visible-but-unfocused panel to front; alerts anchor to the panel's screen.
+- **Keyboard shortcut guide** — in-panel overlay (⌘/, `?`, or ellipsis menu) with Standard and Vim keycap columns; ⇧⌘N adds a section. (spec: spec-keyboard-shortcut-guide.md)
+- Escape unfocuses the composer instead of hiding the panel; the panel hotkey brings a visible-but-unfocused panel to front; alerts anchor to the panel's screen; showing the panel always focuses the composer.
 
 ## v0.2
 
