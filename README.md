@@ -66,7 +66,7 @@ Bronze is an independent project. It is not affiliated with or endorsed by Coppe
 
 ## Download
 
-Get the signed and notarized app from [Gumroad](https://mubinansari.gumroad.com/l/bronze). Copper costs $39. Bronze is pay what you want, with a suggested price of $3.90 and a minimum of $0.
+Get the signed and notarized app from [Gumroad](https://mubinansari.gumroad.com/l/bronze). Copper costs $39. Bronze is pay what you want, with a suggested price of $3.90 and a minimum of $0. The same build is free on [GitHub Releases](https://github.com/shiroyasha9/bronze/releases).
 
 1. Open `Bronze.dmg` and drag Bronze to Applications.
 2. Launch Bronze from Applications. It appears in the menu bar without a Dock icon.

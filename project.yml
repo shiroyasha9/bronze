@@ -37,6 +37,8 @@ targets:
       properties:
         CFBundleName: Bronze
         CFBundleDisplayName: Bronze
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSUIElement: true
         LSMinimumSystemVersion: "14.0"
         NSHumanReadableCopyright: "MIT License"
