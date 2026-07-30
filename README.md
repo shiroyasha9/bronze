@@ -25,7 +25,9 @@ https://github.com/user-attachments/assets/6731b337-98c5-49b7-a1f3-261ffc11b4eb
 
 ## Download
 
-Get the signed and notarized app from [Gumroad](https://mubinansari.gumroad.com/l/bronze). Copper costs $39. Bronze is pay what you want, with a suggested price of $3.90 and a minimum of $0. The same build is free on [GitHub Releases](https://github.com/shiroyasha9/bronze/releases).
+Get the latest signed and notarized build from [GitHub Releases](https://github.com/shiroyasha9/bronze/releases). It is free and requires macOS 14 or later on Apple Silicon.
+
+The same build is on [Gumroad](https://mubinansari.gumroad.com/l/bronze) as pay what you want. Paying is optional and keeps Bronze free of accounts, subscriptions, and tracking.
 
 1. Open the downloaded `.dmg` and drag Bronze to Applications.
 2. Launch Bronze from Applications. It appears in the menu bar without a Dock icon.
