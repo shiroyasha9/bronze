@@ -13,6 +13,26 @@ import Testing
         #expect(store.notes[0].done == false)
     }
 
+    @Test func addNoteToSectionAppendsAtItsEnd() {
+        let store = NotesStore()
+        let s = store.createSection(name: "Research")
+        _ = store.addNote(text: "first", sectionId: s.id)
+        _ = store.addNote(text: "second", sectionId: s.id)
+        #expect(store.notes(in: s.id).map(\.text) == ["first", "second"])
+        #expect(store.notes(in: nil).isEmpty)
+    }
+
+    @Test func addNoteToSectionLeavesInboxAndOtherSectionsAlone() {
+        let store = NotesStore()
+        let s1 = store.createSection(name: "A")
+        let s2 = store.createSection(name: "B")
+        _ = store.addNote(text: "inbox")
+        _ = store.addNote(text: "a", sectionId: s1.id)
+        _ = store.addNote(text: "b", sectionId: s2.id)
+        _ = store.addNote(text: "a2", sectionId: s1.id)
+        #expect(store.displayOrder().map(\.text) == ["inbox", "a", "a2", "b"])
+    }
+
     @Test func editNoteUpdatesText() {
         let store = NotesStore()
         let note = store.addNote(text: "old")

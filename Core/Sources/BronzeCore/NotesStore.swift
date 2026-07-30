@@ -10,8 +10,8 @@ public final class NotesStore {
     }
 
     @discardableResult
-    public func addNote(text: String) -> Note {
-        let note = Note(text: text)
+    public func addNote(text: String, sectionId: UUID? = nil) -> Note {
+        let note = Note(text: text, sectionId: sectionId)
         notes.append(note)
         return note
     }

@@ -67,14 +67,24 @@ final class AppModel: ObservableObject {
         scheduleSave()
     }
 
-    func addNote(text: String) {
+    func addNote(text: String, to sectionId: UUID? = nil) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
         var added: Note?
-        mutate { added = $0.addNote(text: trimmed) }
+        mutate { added = $0.addNote(text: trimmed, sectionId: sectionId) }
         if let added {
             scrollTarget = ScrollTarget(id: added.id, anchor: .bottom)
         }
+    }
+
+    var composerTargetSectionId: UUID? {
+        guard let anchorId else { return nil }
+        return store.notes.first { $0.id == anchorId }?.sectionId
+    }
+
+    func sectionName(for id: UUID?) -> String {
+        guard let id else { return "Inbox" }
+        return store.sections.first { $0.id == id }?.name ?? "Inbox"
     }
 
     func capture(text: String) {
