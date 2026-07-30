@@ -8,6 +8,9 @@ options:
 packages:
   BronzeCore:
     path: Core
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.6.0
 
 targets:
   Bronze:
@@ -19,6 +22,7 @@ targets:
         buildPhase: resources
     dependencies:
       - package: BronzeCore
+      - package: Sparkle
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: tech.teensy.bronze
@@ -32,6 +36,11 @@ targets:
         # without a Team ID (self-signed cert).
         ENABLE_DEBUG_DYLIB: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        # Library validation rejects the SPM Sparkle binary when the app is
+        # signed with the team-less self-signed dev cert.
+        Debug:
+          ENABLE_HARDENED_RUNTIME: NO
     info:
       path: App/Info.plist
       properties:
@@ -42,6 +51,9 @@ targets:
         LSUIElement: true
         LSMinimumSystemVersion: "14.0"
         NSHumanReadableCopyright: "MIT License"
+        SUFeedURL: https://github.com/shiroyasha9/bronze/releases/latest/download/appcast.xml
+        SUPublicEDKey: mpry+AVOKih5qIF0c9vjKEWHiiWHvJq/G0b2t5McQnY=
+        SUEnableAutomaticChecks: true
         UTExportedTypeDeclarations:
           - UTTypeIdentifier: tech.teensy.bronze.notes
             UTTypeDescription: Bronze Notes

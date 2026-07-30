@@ -1,5 +1,6 @@
 import SwiftUI
 import ServiceManagement
+import Sparkle
 
 @main
 struct BronzeApp: App {
@@ -15,6 +16,8 @@ struct BronzeApp: App {
             LaunchAtLoginToggle()
 
             Divider()
+
+            CheckForUpdatesButton(updater: appDelegate.updaterController.updater)
 
             Button("Quit Bronze") {
                 NSApp.terminate(nil)
@@ -43,9 +46,27 @@ private struct LaunchAtLoginToggle: View {
     }
 }
 
+private struct CheckForUpdatesButton: View {
+    let updater: SPUUpdater
+    @State private var canCheck = true
+
+    var body: some View {
+        Button("Check for Updates…") {
+            updater.checkForUpdates()
+        }
+        .disabled(!canCheck)
+        .onReceive(updater.publisher(for: \.canCheckForUpdates)) { canCheck = $0 }
+    }
+}
+
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let model = AppModel()
+    let updaterController = SPUStandardUpdaterController(
+        startingUpdater: true,
+        updaterDelegate: nil,
+        userDriverDelegate: nil
+    )
     private var panelController: PanelController?
     private var captureController: CaptureController?
     private var panelHotkey: GlobalHotkey?

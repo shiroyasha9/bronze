@@ -26,6 +26,12 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>MIT License</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>https://github.com/shiroyasha9/bronze/releases/latest/download/appcast.xml</string>
+	<key>SUPublicEDKey</key>
+	<string>mpry+AVOKih5qIF0c9vjKEWHiiWHvJq/G0b2t5McQnY=</string>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>

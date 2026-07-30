@@ -8,8 +8,10 @@ DIST_DIR := $(CURDIR)/dist
 SIGN_IDENTITY ?= Developer ID Application: Mubin Ansari (7U6G55576W)
 TEAM_ID ?= 7U6G55576W
 NOTARY_PROFILE ?= bronze-notary
+VERSION := $(shell awk '/MARKETING_VERSION:/ {print $$2}' project.yml)
+SPARKLE_BIN := $(BUILD_DIR)/SourcePackages/artifacts/sparkle/Sparkle/bin
 
-.PHONY: gen build test run clean sign-setup release notarize dmg
+.PHONY: gen build test run clean sign-setup release notarize dmg appcast
 
 sign-setup:
 	bash scripts/setup-signing.sh
@@ -46,6 +48,14 @@ dmg: notarize
 	rm -f "$(DIST_DIR)/$(APP).dmg"
 	hdiutil create -volname $(APP) -srcfolder "$(RELEASE_APP)" -ov -format UDZO "$(DIST_DIR)/$(APP).dmg"
 	codesign --force --sign "$(SIGN_IDENTITY)" "$(DIST_DIR)/$(APP).dmg"
+
+appcast: dmg
+	rm -rf $(DIST_DIR)/appcast && mkdir -p $(DIST_DIR)/appcast
+	cp "$(DIST_DIR)/$(APP).dmg" "$(DIST_DIR)/appcast/$(APP)-$(VERSION).dmg"
+	$(SPARKLE_BIN)/generate_appcast \
+		--download-url-prefix "https://github.com/shiroyasha9/bronze/releases/download/v$(VERSION)/" \
+		-o "$(DIST_DIR)/appcast/appcast.xml" \
+		"$(DIST_DIR)/appcast"
 
 clean:
 	rm -rf $(APP).xcodeproj $(BUILD_DIR) $(RELEASE_DIR) $(DIST_DIR) Core/.build
