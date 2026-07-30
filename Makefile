@@ -2,7 +2,14 @@ APP := Bronze
 BUILD_DIR := $(CURDIR)/.build/xcode
 APP_PATH := $(BUILD_DIR)/Build/Products/Debug/$(APP).app
 
-.PHONY: gen build test run clean sign-setup
+RELEASE_DIR := $(CURDIR)/.build/release
+RELEASE_APP := $(RELEASE_DIR)/Build/Products/Release/$(APP).app
+DIST_DIR := $(CURDIR)/dist
+SIGN_IDENTITY ?= Developer ID Application: Mubin Ansari (7U6G55576W)
+TEAM_ID ?= 7U6G55576W
+NOTARY_PROFILE ?= bronze-notary
+
+.PHONY: gen build test run clean sign-setup release notarize dmg
 
 sign-setup:
 	bash scripts/setup-signing.sh
@@ -19,5 +26,26 @@ test:
 run: build
 	open $(APP_PATH)
 
+release: gen
+	xcodebuild -project $(APP).xcodeproj -scheme $(APP) -configuration Release \
+		-derivedDataPath $(RELEASE_DIR) \
+		CODE_SIGN_IDENTITY="$(SIGN_IDENTITY)" \
+		DEVELOPMENT_TEAM="$(TEAM_ID)" \
+		CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
+		OTHER_CODE_SIGN_FLAGS="--timestamp" \
+		build
+
+notarize: release
+	mkdir -p $(DIST_DIR)
+	ditto -c -k --keepParent "$(RELEASE_APP)" "$(DIST_DIR)/$(APP).zip"
+	xcrun notarytool submit "$(DIST_DIR)/$(APP).zip" --keychain-profile $(NOTARY_PROFILE) --wait
+	xcrun stapler staple "$(RELEASE_APP)"
+	ditto -c -k --keepParent "$(RELEASE_APP)" "$(DIST_DIR)/$(APP).zip"
+
+dmg: notarize
+	rm -f "$(DIST_DIR)/$(APP).dmg"
+	hdiutil create -volname $(APP) -srcfolder "$(RELEASE_APP)" -ov -format UDZO "$(DIST_DIR)/$(APP).dmg"
+	codesign --force --sign "$(SIGN_IDENTITY)" "$(DIST_DIR)/$(APP).dmg"
+
 clean:
-	rm -rf $(APP).xcodeproj $(BUILD_DIR) Core/.build
+	rm -rf $(APP).xcodeproj $(BUILD_DIR) $(RELEASE_DIR) $(DIST_DIR) Core/.build
