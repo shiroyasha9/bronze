@@ -25,10 +25,12 @@ final class FloatingPanel: NSPanel {
 @MainActor
 final class PanelController {
     private let panel: FloatingPanel
+    private let model: AppModel
     private var keyRouter: KeyRouter?
     private var pinSubscription: AnyCancellable?
 
     init(model: AppModel) {
+        self.model = model
         panel = FloatingPanel(
             contentRect: NSRect(x: 0, y: 0, width: 360, height: 560),
             styleMask: [.nonactivatingPanel, .titled, .closable, .fullSizeContentView, .resizable],
@@ -72,6 +74,7 @@ final class PanelController {
     func show() {
         panel.orderFrontRegardless()
         panel.makeKey()
+        model.composerRequest += 1
     }
 
     func hide() {
