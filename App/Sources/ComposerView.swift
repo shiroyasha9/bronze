@@ -17,6 +17,10 @@ struct ComposerView: View {
                 .lineLimit(3...6)
                 .focused(focused)
                 .onSubmit(commit)
+                .onKeyPress(.escape) {
+                    focused.wrappedValue = false
+                    return .handled
+                }
         }
         .padding(10)
         .background(Bronze.cardFill, in: RoundedRectangle(cornerRadius: Bronze.cardCorner))
