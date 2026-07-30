@@ -2,7 +2,7 @@
 
 Features discussed during planning and deliberately cut from MVP. Ordered roughly by priority.
 
-## Shipped since v0.1.0
+## Shipped in v0.2.0
 
 - **Section-aware note filing** — composer notes land in the active section; `#section` token with fuzzy autocomplete overrides; destination label in the composer. Vim `p` pastes after the selection in the same section. (spec: specs/new-note-section-assignment.md)
 - **Sparkle auto-updates** — signed appcast attached to each GitHub Release; `make appcast` + the `release` skill own the flow.
@@ -11,7 +11,7 @@ Features discussed during planning and deliberately cut from MVP. Ordered roughl
 - **Keyboard shortcut guide** — in-panel overlay (⌘/, `?`, or ellipsis menu) with Standard and Vim keycap columns; ⇧⌘N adds a section. (spec: spec-keyboard-shortcut-guide.md)
 - Escape unfocuses the composer instead of hiding the panel; the panel hotkey brings a visible-but-unfocused panel to front; alerts anchor to the panel's screen; showing the panel always focuses the composer.
 
-## v0.2
+## Next
 
 - **Fuzzy search** — replace substring matching; committed as the immediate next feature. Needs scoring tuned so results never feel random (likely Smith-Waterman-ish subsequence scoring like fzf, weighted toward word starts).
 - **Undo** — ⌘Z / vim `u`. Store-level operation log; unlocks guilt-free no-confirm delete.
@@ -20,7 +20,7 @@ Features discussed during planning and deliberately cut from MVP. Ordered roughl
 - **Merge Notes** (⇧⌘M) — combine selected notes into one; define join rule (newline join, keep earliest position).
 - **Move to** submenu parity — full Copper-style context menu with section submenu.
 
-## v0.3+
+## Later
 
 - **Multiple projects** — project switcher in panel header; schema already carries `projectId`, so this is UI + a picker, no migration.
 - **Edit in New Window** (⌘↩) — detached editor window for long notes.
