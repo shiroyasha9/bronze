@@ -64,9 +64,19 @@ Markdown only changes how a note looks in Bronze. Copying or dragging a note out
 
 Bronze is an independent project. It is not affiliated with or endorsed by Copper or shadcn.
 
-## Setup
+## Download
 
-Bronze supports macOS 14 or later and is currently distributed as source. The setup below gives local builds a stable signing identity so macOS can retain Accessibility access across rebuilds.
+Get the signed and notarized app from [Gumroad](https://mubinansari.gumroad.com/l/bronze). Copper costs $39. Bronze is pay what you want, with a suggested price of $3.90 and a minimum of $0.
+
+1. Open `Bronze.dmg` and drag Bronze to Applications.
+2. Launch Bronze from Applications. It appears in the menu bar without a Dock icon.
+3. Enable Bronze under **System Settings > Privacy & Security > Accessibility** when prompted, then relaunch it.
+
+Prefer building it yourself? Follow the setup below.
+
+## Building from source
+
+Bronze supports macOS 14 or later. The setup below gives local builds a stable signing identity so macOS can retain Accessibility access across rebuilds.
 
 ### 1. Install the prerequisites
 
@@ -189,7 +199,6 @@ Back up `notes.json` to preserve your notes. To restore a backup, quit Bronze, r
 - Markdown has no block formatting or rendered images.
 - Shortcuts are fixed. Shift Shift can conflict with some typing or IME workflows.
 - Deletion has no undo.
-- Bronze must currently be built from source.
 
 ## Planned
 
@@ -198,7 +207,7 @@ Back up `notes.json` to preserve your notes. To restore a backup, quit Bronze, r
 - Custom shortcuts and settings
 - Merge notes
 - Multiple projects
-- Signed releases and Homebrew installation
+- Homebrew installation
 
 See the [roadmap](docs/roadmap.md) for the full plan.
 
