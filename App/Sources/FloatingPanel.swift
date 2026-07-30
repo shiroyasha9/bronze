@@ -78,6 +78,6 @@ final class PanelController {
     }
 
     func toggle() {
-        panel.isVisible ? hide() : show()
+        panel.isKeyWindow ? hide() : show()
     }
 }
