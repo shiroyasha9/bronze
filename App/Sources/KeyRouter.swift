@@ -27,8 +27,11 @@ final class KeyRouter {
 
     private func shouldHandle(_ event: NSEvent) -> Bool {
         guard let panel, event.window === panel, panel.isKeyWindow else { return false }
-        // Insert mode: any focused text field owns the keyboard.
-        if panel.firstResponder is NSTextView { return false }
+        // Insert mode: any focused text field owns the keyboard, except ⌘/.
+        if panel.firstResponder is NSTextView {
+            return event.modifierFlags.contains(.command)
+                && event.charactersIgnoringModifiers == "/"
+        }
         return true
     }
 
@@ -43,6 +46,10 @@ final class KeyRouter {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         let shift = flags.contains(.shift)
 
+        if model.showShortcutGuide {
+            return handleGuideKey(event, flags: flags)
+        }
+
         if flags.contains(.command) {
             guard let char = event.charactersIgnoringModifiers?.lowercased() else { return false }
             switch char {
@@ -53,7 +60,10 @@ final class KeyRouter {
                 model.searchRequest += 1
                 return true
             case "n":
-                model.composerRequest += 1
+                shift ? model.promptNewSection() : (model.composerRequest += 1)
+                return true
+            case "/":
+                model.toggleShortcutGuide()
                 return true
             default:
                 return false
@@ -129,9 +139,31 @@ final class KeyRouter {
             model.visualMode.toggle()
             return true
         case "/": model.searchRequest += 1; return true
+        case "?": model.toggleShortcutGuide(); return true
         case "m": showMoveMenu(); return true
         default: return false
         }
+    }
+
+    /// Guide swallows plain keys so browsing can't mutate notes; command
+    /// chords other than ⌘/ still reach the menu bar.
+    private func handleGuideKey(_ event: NSEvent, flags: NSEvent.ModifierFlags) -> Bool {
+        if flags.contains(.command) {
+            guard event.charactersIgnoringModifiers == "/" else { return false }
+            model.toggleShortcutGuide()
+            return true
+        }
+        if event.keyCode == 53 {
+            model.toggleShortcutGuide()
+            return true
+        }
+        switch event.charactersIgnoringModifiers?.first {
+        case "?": model.toggleShortcutGuide()
+        case "j": model.guideScrollStep += 1
+        case "k": model.guideScrollStep -= 1
+        default: break
+        }
+        return true
     }
 
     private func handleEscape() -> Bool {

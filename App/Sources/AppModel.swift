@@ -14,6 +14,8 @@ final class AppModel: ObservableObject {
     @Published var visualMode = false
     @Published var searchRequest = 0
     @Published var composerRequest = 0
+    @Published var showShortcutGuide = false
+    @Published var guideScrollStep = 0
     @Published var dragDropEnabled: Bool {
         didSet { UserDefaults.standard.set(dragDropEnabled, forKey: "dragDropEnabled") }
     }
@@ -23,6 +25,7 @@ final class AppModel: ObservableObject {
     @Published var dropIndicator: DropIndicator?
     @Published var toast: ToastMessage?
     var activeDragPayload: NoteDragPayload?
+    private var frameBeforeGuide: NSRect?
     private var dropIndicatorExpiry: Task<Void, Never>?
     private var toastExpiry: Task<Void, Never>?
 
@@ -90,6 +93,27 @@ final class AppModel: ObservableObject {
 
     func capture(text: String) {
         addNote(text: text)
+    }
+
+    func toggleShortcutGuide() {
+        let opening = !showShortcutGuide
+        withAnimation(.easeOut(duration: 0.15)) { showShortcutGuide.toggle() }
+        guard let window = panelWindow else { return }
+        if opening {
+            frameBeforeGuide = window.frame
+            var frame = window.frame
+            frame.size.width += 60
+            frame.size.height += 120
+            frame.origin.y -= 120
+            if let visible = window.screen?.visibleFrame {
+                frame.origin.y = max(frame.origin.y, visible.minY)
+                frame.origin.x = min(frame.origin.x, visible.maxX - frame.width)
+            }
+            window.setFrame(frame, display: true, animate: true)
+        } else if let prior = frameBeforeGuide {
+            frameBeforeGuide = nil
+            window.setFrame(prior, display: true, animate: true)
+        }
     }
 
     func copySelection() {

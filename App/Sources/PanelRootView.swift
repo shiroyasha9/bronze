@@ -24,6 +24,12 @@ struct PanelRootView: View {
         .ignoresSafeArea(.container, edges: .top)
         .frame(minWidth: 300, minHeight: 400)
         .background(PanelBackground().ignoresSafeArea())
+        .overlay {
+            if model.showShortcutGuide {
+                ShortcutGuideView()
+                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
+            }
+        }
         .environment(\.searchFocus, $searchFocused)
         .onChange(of: model.searchRequest) { _, _ in searchFocused = true }
         .onChange(of: model.composerRequest) { _, _ in composerFocused = true }
@@ -49,6 +55,7 @@ struct PanelRootView: View {
 
             Menu {
                 Button("Add Section…") { model.promptNewSection() }
+                    .keyboardShortcut("n", modifiers: [.command, .shift])
                 Menu("Clear") {
                     Button("Clear Completed") { model.mutate { $0.clearCompleted() } }
                         .disabled(!model.store.notes.contains(where: \.done))
@@ -63,6 +70,9 @@ struct PanelRootView: View {
                 Divider()
                 Toggle("Drag to Reorder", isOn: $model.dragDropEnabled)
                 Toggle("Pin to Foreground", isOn: $model.pinToForeground)
+                Divider()
+                Button("Keyboard Shortcuts") { model.toggleShortcutGuide() }
+                    .keyboardShortcut("/", modifiers: .command)
             } label: {
                 Image(systemName: "ellipsis")
             }
