@@ -2,6 +2,14 @@
 
 Features discussed during planning and deliberately cut from MVP. Ordered roughly by priority.
 
+## Shipped since v0.1.0
+
+- **Section-aware note filing** — composer notes land in the active section; `#section` token with fuzzy autocomplete overrides; destination label in the composer. Vim `p` pastes after the selection in the same section. (spec: specs/new-note-section-assignment.md)
+- **Sparkle auto-updates** — signed appcast attached to each GitHub Release; `make appcast` + the `release` skill own the flow.
+- **Developer ID signing, notarization, dmg** — `make dmg`, manual for now (CI later).
+- **Paid prebuilt binary** — pay-what-you-want on Gumroad, same build free on GitHub Releases.
+- Escape unfocuses the composer instead of hiding the panel; the panel hotkey brings a visible-but-unfocused panel to front; alerts anchor to the panel's screen.
+
 ## v0.2
 
 - **Fuzzy search** — replace substring matching; committed as the immediate next feature. Needs scoring tuned so results never feel random (likely Smith-Waterman-ish subsequence scoring like fzf, weighted toward word starts).
@@ -17,13 +25,10 @@ Features discussed during planning and deliberately cut from MVP. Ordered roughl
 - **Edit in New Window** (⌘↩) — detached editor window for long notes.
 - **Expand** — in-place expansion of clamped notes (context-menu item exists in Copper; semantics TBD).
 
-## Distribution track (parallel, when going public)
+## Distribution track (parallel)
 
-- Apple Developer account ($99/yr), Developer ID signing + notarization.
-- **Sparkle** for self-hosted updates (appcast on GitHub Pages or teensy.tech).
-- GitHub Releases: notarized `.dmg`/`.zip` via CI (xcodegen + xcodebuild + notarytool in Actions).
+- CI releases: xcodegen + xcodebuild + notarytool + generate_appcast in GitHub Actions (today the flow is local via `make appcast`).
 - **Homebrew cask** once releases are stable.
-- Optional later: small fee for prebuilt binary (code stays MIT; paying skips self-building), e.g. Lemon Squeezy like Copper.
 
 ## Explicitly not planned
 

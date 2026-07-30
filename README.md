@@ -55,6 +55,7 @@ Bronze is an independent project. It is not affiliated with or endorsed by Coppe
 
 - Capture selected text from almost any app by double-pressing Shift
 - Keep checklist notes in sections and find them with live substring search
+- File new notes into the section you are working in, or target any section with a `#section` token and fuzzy autocomplete; a label in the composer always shows the destination
 - Select several notes with the keyboard or mouse
 - Copy notes as plain text or a numbered list
 - Reorder notes within a section or drag them between sections
@@ -63,6 +64,7 @@ Bronze is an independent project. It is not affiliated with or endorsed by Coppe
 - Pin the panel above other windows and restore its last position
 - Clear completed notes and launch Bronze at login
 - Keep notes in a local JSON file, with no account, sync, or telemetry
+- Update in place through Sparkle, no reinstall needed
 
 ## Markdown
 
@@ -109,7 +111,7 @@ Vim bindings activate automatically when the Bronze window is focused and no tex
 | `⌘F` | Focus search |
 | `⌘N` | Focus the composer |
 | `⌥J` / `⌥K` | Move the selected note down or up |
-| `Escape` | Exit visual mode, clear search, clear selection, or hide Bronze |
+| `Escape` | Unfocus the composer, exit visual mode, clear search, clear selection, or hide Bronze |
 
 ### Vim
 
@@ -125,7 +127,7 @@ Vim bindings activate automatically when the Bronze window is focused and no tex
 | `o` / `O` | Create a note below or above the selection |
 | `i` | Edit the selected note |
 | `y` | Copy one note, or copy a visual selection as a numbered list |
-| `p` | Paste the clipboard as a new note |
+| `p` | Paste the clipboard as a note after the selection, in the same section |
 | `v` / `V` | Toggle visual selection mode |
 | `/` | Focus search |
 | `m` | Open the Move to menu |
